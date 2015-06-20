@@ -28,21 +28,6 @@
 	{% crispy profile_form %}
       </form>
       <a class="btn btn-default pull-right" href="{% url 'accounts:password-change' %}">Change Password</a>
-      <h3>Subscription</h3>
-      {% if not user.is_paid %}
-          <form id="checkout" method="post" action="{% url "payments:checkout" %}">
-            <div id="payment-form"></div>
-            <input type="submit" value="Subscribe">
-          </form>
-          <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
-          <script>
-            braintree.setup("{{ user.get_client_token }}", "dropin", {
-              container: "payment-form"
-            });
-          </script>
-      {% else %}
-        Your subscription is already active!
-      {% endif %}
     </div>
   </div>
 </div>
