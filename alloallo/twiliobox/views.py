@@ -68,6 +68,7 @@ class DescriptionEdit(generic.View):
             recording_url = data.get("RecordingUrl", None)
             response.say('Thank you. Here is your description')
             response.play(recording_url)
+            # TODO: save it to Profile.audio_description
             response.redirect(reverse('main_menu'))
 
         return HttpResponse(response)
