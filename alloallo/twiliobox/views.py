@@ -20,8 +20,8 @@ def reverse(name, *args, **kwargs):
 class IncomingCall(generic.View):
     """ Handle incoming view """
 
-    def get(self, request):
-        data = request.GET
+    def post(self, request):
+        data = request.POST
         number = data['From']
         response = twiml.Response()
 
@@ -54,7 +54,7 @@ class DescriptionEdit(generic.View):
 
     def get(self, request, confirmation=None):
         response = twiml.Response()
-        data = request.GET
+        data = request.POST
 
         if confirmation is None:
             response.say('Tell others something about you in 30 seconds')
