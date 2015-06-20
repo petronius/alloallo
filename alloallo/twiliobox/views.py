@@ -1,4 +1,6 @@
 # from django.shortcuts import render
+import random
+
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.views import generic
@@ -147,8 +149,18 @@ class DescriptionEdit(generic.View):
 
 class RandomCall(ViewWithHandler):
 
-    def get_random_profile(self):
-        return Profile.objects.filter(audio_description__isnull=False).order_by('?').first()
+    def get_random_profile(self, request):
+        profiles = [p for p in Profile.objects.all()]
+        random.shuffle(profiles)
+        for profile in profiles:
+            try:
+                if request.user and request.user.id == profile.user.id:
+                    continue
+            except:
+                pass
+            if profile.audio_description:
+                return profile
+
 
     def get_last_profile(self, request):
         user_id = request.session.get("last_played_profile")
@@ -161,7 +173,10 @@ class RandomCall(ViewWithHandler):
             ' Press 1 at any time to start a conversation, and 2 to skip to the'+
             ' next profile', voice='woman')
 
-        user_profile = self.get_random_profile()
+        user_profile = self.get_random_profile(request)
+        if not user_profile:
+            response.say("Could not find a profile to match you with.")
+            return HttpResponse(response)
         request.session["last_played_profile"] = user_profile.user.id
         audio_url = user_profile.audio_description
         # play the profile
@@ -191,4 +206,4 @@ class RandomCall(ViewWithHandler):
         response.dial(profile2.user.number)
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)
-        
+       
