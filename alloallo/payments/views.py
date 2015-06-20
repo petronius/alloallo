@@ -21,12 +21,9 @@ def json_response(f):
 
 @json_response
 def client_token(request):
-    #customer_id = request.GET.get("customer_id")
-    #if not customer_id:
-    #    return HttpResponse("customer_id required", status=403)
-    #token = braintree.ClientToken.generate({
-    #    "customer_id": customer_id,
-    #})
+    token = braintree.ClientToken.generate({
+        "customer_id": request.user.bt_customer_id,
+    })
     return {
-        "client_token": SAMPLE_CLIENT_TOKEN,
+        "client_token": token,
     }

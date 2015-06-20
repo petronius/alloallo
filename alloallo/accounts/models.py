@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import braintree
+
 from authtools.models import UserManager
 
 from django.db import models
@@ -21,6 +23,8 @@ class UserManager(BaseUserManager):
 
         user = self.model(number=number)
 
+        user.create_customer_id()
+
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -37,7 +41,6 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.save(using=self._db)
         return user
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     number = models.CharField(max_length=64, unique=True,
@@ -57,6 +60,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    bt_customer_id = models.IntegerField()
+
     USERNAME_FIELD = 'number'
     REQUIRED_FIELDS = []
 
@@ -68,6 +73,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.number
+
+    def create_customer_id(self):
+        """
+        Create a Braintree customer id
+        """
+        if self.bt_customer_id and self.bt_customer_id > 0:
+            return
+        result = braintree.Customer.create({
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "phone": self.number,
+        })
+        if result.is_success:
+            self.bt_customer_id = result.customer.id
+        else:
+            raise ValueError("Braintree failed to create customer identity. Please check user details.")
 
     @python_2_unicode_compatible
     def __str__(self):
