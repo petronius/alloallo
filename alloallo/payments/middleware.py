@@ -21,7 +21,7 @@ class PayMeNowMiddleware(object):
             reverse("payments:payment"),
             reverse("payments:checkout"),
         ]
-        if request.path not in allowed_urls:
+        if request.path not in allowed_urls or request.path.strip("/").startsiwth("calls"):
             return HttpResponseRedirect(reverse("payments:payment"))
 
 
