@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}About{% endblock %}
+
+{% block navbar-left %}
+  {% include "_navbar.html" with active_link="friends" %}
+{% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block container %}
+
+<div id="sec2" class="text-page">
+  <div class="container">
+   {% for object in object_list %}
+        <div class="col-lg-4">
+          <h2>{{ object.get_full_name }}</h2>
+          <p class="text-danger">{{ object.number }}</p>
+          <p>{{ object.profile.bio }}</p>
+          <p><a class="btn btn-primary" href="{% url 'profiles:show' pk=object.pk %}" role="button">View profile »</a></p>
+        </div>
+    {% endfor %}
+        <nav class="col-md-12 center">
+            <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li>
+                  <a href="?page={{ page_obj.previous_page_number }}" aria-label="Previous" class="arrow">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+            {% endif %}
+            <li><a class="arrow">Page {{ page_obj.number }} from {{ page_obj.paginator.num_pages }}.</a></li>
+            {% if page_obj.has_next %}
+                <li>
+                  <a href="?page={{ page_obj.next_page_number }}" aria-label="Next" class="arrow">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+            {% endif %}
+            </ul>
+        </nav>
+  </div>
+</div>
+
+{% endblock container %}
+
+{% block scripts %}
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+{% endblock scripts %}
