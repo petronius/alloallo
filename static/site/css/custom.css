@@ -1,0 +1,23 @@
+.search_container {
+    width: 100%;
+    background: url('/static/site/img/searchbg.jpg') no-repeat;
+    background-size: 100%;
+}
+
+.search_container .form-group {
+  width: 300px;
+  float: right;
+  margin-top: 100px;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #eee;
+  text-shadow: 0px 0px 2px black;
+}
+
+.search_container .view-profile {
+  margin-top: 20px;
+  float: right;
+}
+
+.search_container .container {
+  margin-bottom: 20px; height: 400px;
+}

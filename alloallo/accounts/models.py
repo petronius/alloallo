@@ -42,6 +42,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     number = models.CharField(max_length=64, unique=True,
                               null=False, blank=False)
@@ -62,6 +63,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                     " accounts can't use the service."))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+    friends = models.ManyToManyField('accounts.User')
+
     objects = UserManager()
 
     bt_customer_id = models.IntegerField(null=True)
@@ -73,7 +76,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering = ['number']
 
     def get_full_name(self):
-        return self.number
+        return '{} {}'.format(self.first_name, self.last_name)
 
     def get_short_name(self):
         return self.number
@@ -106,4 +109,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @python_2_unicode_compatible
     def __str__(self):
-        return self.number
+        return self.get_full_name()
