@@ -13,3 +13,5 @@ django-admin-bootstrapped>=2.4.0
 django-authtools>=1.2.0
 easy-thumbnails>=2.2
 twilio
+braintree>=3.16.0
+requests>=2.7.0

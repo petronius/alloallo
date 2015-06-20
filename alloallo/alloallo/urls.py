@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 from alloallo.profiles import urls as profiles_urls
 from alloallo.accounts import urls as accounts_urls
 from alloallo.twiliobox import urls as twiliobox_urls
+from alloallo.payments import urls as payments_urls
+
 from . import views
 
 urlpatterns = [
@@ -13,7 +15,8 @@ urlpatterns = [
     url(r'^users/', include(profiles_urls, namespace='profiles')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(accounts_urls, namespace='accounts')),
-    url(r'^calls/', include(twiliobox_urls, namespace='twiliobox'))
+    url(r'^calls/', include(twiliobox_urls, namespace='twiliobox')),
+    url(r'^payments/', include(payments_urls, namespace='payments')),
 ]
 
 # User-uploaded files like profile pics need to be served in development
