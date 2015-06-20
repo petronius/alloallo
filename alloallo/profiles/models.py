@@ -1,8 +1,14 @@
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
+
 import uuid
+
+from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from alloallo.accounts.models import User
 
 
 class BaseProfile(models.Model):
@@ -26,3 +32,13 @@ class BaseProfile(models.Model):
 class Profile(BaseProfile):
     def __str__(self):
         return "{}'s profile". format(self.user)
+
+
+@receiver(post_save, sender=User)
+def create_profile_handler(sender, instance, created, **kwargs):
+    if not created:
+        return
+    # Create the profile object, only if it is newly created
+    profile = Profile(user=instance)
+    profile.save()
+
