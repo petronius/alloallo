@@ -16,9 +16,12 @@ class PayMeNowMiddleware(object):
             return
         if user.is_paid:
             return
-        payment_url = reverse("payments:payment")
-        payment_url = reverse("payments:checkout")
-        if request.path != payment_url and request.path != checkout_url:
-            return HttpResponseRedirect(payment_url)
+        allowed_urls = [
+            reverse("accounts:logout"),
+            reverse("payments:payment"),
+            reverse("payments:checkout"),
+        ]
+        if request.path not in allowed_urls:
+            return HttpResponseRedirect(reverse("payments:payment"))
 
 
