@@ -95,11 +95,16 @@ class LoginForm(forms.Form):
 
 class SignupForm(authtoolsforms.UserCreationForm):
 
+    first_name = forms.CharField(max_length=64)
+    last_name = forms.CharField(max_length=64)
+
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
 
         self.helper.layout = Layout(
+            Field('first_name', placeholder="First Name", autofocus=""),
+            Field('last_name', placeholder="Last Name", autofocus=""),
             Field('number', placeholder="Enter phone no", autofocus=""),
             Field('password1', placeholder="Enter Password"),
             Field('password2', placeholder="Re-enter Password"),
