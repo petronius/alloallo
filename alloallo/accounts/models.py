@@ -96,6 +96,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise ValueError("Braintree failed to create customer identity. Please check user details.")
 
     def get_client_token(self):
+        # Make sure we have a customer id
+        if self.bt_customer_id < 1:
+            self.create_customer_id()
+            self.save()
         return braintree.ClientToken.generate({
             "customer_id": self.bt_customer_id,
         })
