@@ -56,6 +56,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('active'), default=True,
         help_text=_('Designates whether this user should be treated as '
                     'active.  Unselect this instead of deleting accounts.'))
+    is_paid = models.BooleanField(
+        _("paid"), default=False,
+        help_text=_("Whether the user has paid for their account. Unpaid"
+                    " accounts can't use the service."))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = UserManager()
@@ -90,6 +94,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.bt_customer_id = result.customer.id
         else:
             raise ValueError("Braintree failed to create customer identity. Please check user details.")
+
+    def get_client_token(self):
+        return braintree.ClientToken.generate({
+            "customer_id": self.bt_customer_id,
+        })
 
     @python_2_unicode_compatible
     def __str__(self):

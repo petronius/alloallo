@@ -20,10 +20,8 @@ def json_response(f):
 
 
 @json_response
-def client_token(request):
-    token = braintree.ClientToken.generate({
-        "customer_id": request.user.bt_customer_id,
-    })
-    return {
-        "client_token": token,
-    }
+def client_paid(request):
+    return {}
+
+def checkout(request):
+    pass
