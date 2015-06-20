@@ -6,7 +6,7 @@ from django.db import models, migrations
 def data_migration(apps, schema_editor):
     users = apps.get_model("accounts", "User")
     for user in users.objects.all():
-        user.create_customer_id()
+        user.bt_customer_id = -1
         user.save()
 
 class Migration(migrations.Migration):
