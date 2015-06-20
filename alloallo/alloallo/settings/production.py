@@ -9,4 +9,4 @@ BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), '..', '..')
 
 ALLOWED_HOSTS = ['allo-allo.herokuapp.com']
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
