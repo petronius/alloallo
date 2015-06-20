@@ -1,2 +1,8 @@
 alloallo/alloallo/settings/local.py
 *.pyc
+
+# vim noise
+*.swp
+
+# sqlite
+data.db
