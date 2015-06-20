@@ -14,8 +14,9 @@ class UserProfileInline(admin.StackedInline):
 
 class NewUserAdmin(NamedUserAdmin):
     inlines = [UserProfileInline]
-    list_display = ('is_active', 'email', 'name', 'permalink',
+    list_display = ('is_active', 'email', 'number', 'permalink',
                     'is_superuser', 'is_staff',)
+    list_display_links = ('email', 'number',)
 
     # 'View on site' didn't work since the original User model needs to
     # have get_absolute_url defined. So showing on the list display
@@ -27,5 +28,4 @@ class NewUserAdmin(NamedUserAdmin):
         return '<a href="{}">{}</a>'.format(url, '\xb6')
     permalink.allow_tags = True
 
-admin.site.unregister(User)
 admin.site.register(User, NewUserAdmin)

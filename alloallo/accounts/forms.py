@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
+
+from authtools import forms as authtoolsforms
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, HTML, Field
+
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
-from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
-from authtools import forms as authtoolsforms
 from django.contrib.auth import forms as authforms
 from django.core.urlresolvers import reverse
 
@@ -15,10 +17,9 @@ class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields["username"].widget.input_type = "email"  # ugly hack
 
         self.helper.layout = Layout(
-            Field('username', placeholder="Enter Email", autofocus=""),
+            Field('number', placeholder="Enter Email", autofocus=""),
             Field('password', placeholder="Enter Password"),
             HTML('<a href="{}">Forgot Password?</a>'.format(
                 reverse("accounts:password-reset"))),
@@ -33,15 +34,13 @@ class SignupForm(authtoolsforms.UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields["email"].widget.input_type = "email"  # ugly hack
 
         self.helper.layout = Layout(
-            Field('email', placeholder="Enter Email", autofocus=""),
-            Field('name', placeholder="Enter Full Name"),
+            Field('number', placeholder="Enter phone no", autofocus=""),
             Field('password1', placeholder="Enter Password"),
             Field('password2', placeholder="Re-enter Password"),
             Submit('sign_up', 'Sign up', css_class="btn-warning"),
-            )
+        )
 
 
 class PasswordChangeForm(authforms.PasswordChangeForm):
