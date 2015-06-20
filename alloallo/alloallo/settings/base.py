@@ -1,6 +1,8 @@
 from __future__ import unicode_literals, absolute_import
+
 import os.path
 
+from django.core.urlresolvers import reverse_lazy
 from django.core.exceptions import ImproperlyConfigured
 
 from .braintree import *
@@ -188,3 +190,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 TWILIO_TEST_SID = 'AC2728c00f4891d511c061192e87fcb371'
 TWILIO_TEST_TOKEN = '663b4ef990a9&c485#5CxQb1f9a'
+
+LOGIN_REDIRECT_URL = reverse_lazy("profiles:show_self")
+LOGIN_URL = reverse_lazy("accounts:login")

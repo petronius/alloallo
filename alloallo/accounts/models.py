@@ -33,6 +33,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(number, password=password,
         )
         user.is_admin = True
+        user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
         return user
@@ -41,6 +42,8 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     number = models.CharField(max_length=64, unique=True,
                               null=False, blank=False)
+    first_name = models.CharField(max_length=64, null=True, blank=True)
+    last_name = models.CharField(max_length=64, null=True, blank=True)
     email = models.CharField(max_length=256, null=True, blank=True)
     is_staff = models.BooleanField(
         _('staff status'), default=False,
