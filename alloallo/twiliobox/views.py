@@ -25,7 +25,7 @@ class IncomingCall(generic.View):
         number = data['From']
         response = twiml.Response()
 
-        response.say('Welcome to Allo Allo!')
+        response.say('Welcome to Allo Allo!', voice='alice')
 
         try:
             profile = Profile.objects.get(user__number=number)
@@ -43,11 +43,78 @@ class IncomingCall(generic.View):
         return HttpResponse(response)
 
 
-class MainMenu(generic.View):
+class ViewWithHandler(generic.View):
+    """
+    Use default post to do whatever you want, and post_handler method
+    to do something with selected option
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            if request.POST.get('Digits'):
+                digits = request.POST['Digits']
+                return self.post_handler(
+                    request, digits, *args, **kwargs
+                )
+            return self.post(request, *args, **kwargs)
+        return super(ViewWithHandler, self).dispatch(
+            request, *args, **kwargs
+        )
+
+
+class MainMenu(ViewWithHandler):
+    """ Main voice menu view (that sounds stupid...) """
+
+    menu_options = [
+        {
+            'desc': 'Call a stranger',
+            # 'url': reverse('call_random_person'),
+        },
+        {
+            'desc': 'Call a friend',
+            # 'url': reverse('call_friend'),
+        },
+        {
+            'desc': 'Post to your wall',
+            # 'url': reverse('post_to_wall'),
+        },
+        {
+            'desc': 'Go to Profile settings',
+            # 'url': reverse('profile_settings'),
+        },
+    ]
+
+    @property
+    def saidable_menu(self):
+        result = []
+        for i, menu_dict in enumerate(self.menu_options, 1):
+            result.append(
+                'To {}, press {}'.format(menu_dict['desc'], i)
+            )
+        return '.\n'.join(result)
 
     def post(self, request):
         response = twiml.Response()
-        response.say('This is the main menu')
+        response.say('Please select an option.', voice='woman')
+
+        with response.gather(
+            numDigits=1,
+            action=reverse('main_menu'),
+            method='POST',
+            timeout=15,
+        ) as g:
+            g.say(self.saidable_menu, loop=3)
+
+        return HttpResponse(response)
+
+    def post_handler(self, request, digit):
+        menu_index = int(digit) - 1  # menu is presented starting from 1
+        selected = self.menu_options[menu_index]
+
+        response = twiml.Response()
+        response.say(
+            'You decided to {}'.format(selected['desc'])
+        )
         return HttpResponse(response)
 
 
@@ -58,9 +125,9 @@ class DescriptionEdit(generic.View):
         data = request.POST
 
         if confirmation is None:
-            response.say('Tell others something about you in 30 seconds')
+            response.say('Tell others something about you')
             response.record(
-                maxLength='30',
+                maxLength=10,
                 action=reverse(
                     'description_edit_confirm',
                     kwargs={'confirmation': 1}
