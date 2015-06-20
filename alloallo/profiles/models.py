@@ -17,7 +17,9 @@ class BaseProfile(models.Model):
                                 blank=True)
     bio = models.CharField("Short Bio", max_length=200, blank=True, null=True)
     email_verified = models.BooleanField("Email verified", default=False)
-    audio_description = models.CharField("Audio description", null=True)
+    audio_description = models.CharField(
+        "Audio description", max_length=1024, null=True
+    )
 
     class Meta:
         abstract = True
