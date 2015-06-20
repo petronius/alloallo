@@ -22,7 +22,7 @@ class IncomingCall(generic.View):
 
     def get(self, request):
         data = request.GET
-        number = data['number']
+        number = data['From']
         response = twiml.Response()
 
         response.say('Welcome to Allo Allo!')
