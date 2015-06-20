@@ -1,0 +1,4 @@
+-r base.txt
+
+static
+django-sslify>=0.2

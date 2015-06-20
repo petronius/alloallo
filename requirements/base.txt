@@ -1,0 +1,9 @@
+# Heroku
+dj-database-url
+dj_static
+gunicorn
+psycopg2
+
+# app
+Django>=1.8
+Pillow
