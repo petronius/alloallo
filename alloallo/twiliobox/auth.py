@@ -1,8 +1,7 @@
-from importlib import import_module
-
 from django.apps import apps
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.sessions.backends.base import CreateError
+from django.contrib.sessions.backends.db import SessionStore
 from django.utils.functional import SimpleLazyObject
 
 
@@ -10,11 +9,19 @@ TWILIO_SESSION_PREFIX = 'TWILIO_SESSION_'
 User = apps.get_model('accounts.User')
 
 
-class TwilioSessionMiddleware(object):
-    def __init__(self):
-        engine = import_module(settings.SESSION_ENGINE)
-        self.SessionStore = engine.SessionStore
+class ForcedSessionIdSessionStore(SessionStore):
+    def create(self):
+        try:
+            self.save(must_create=True)
+        except CreateError:
+            self.delete()
+            self.save()
+        self.modified = True
+        self._session_cache = {}
+        return
 
+
+class TwilioSessionMiddleware(object):
     def process_request(self, request):
         if 'HTTP_X_TWILIO_SIGNATURE' not in request.META:
             return
@@ -23,7 +30,7 @@ class TwilioSessionMiddleware(object):
         try:
             user_number = request.POST['From']
             session_key = TWILIO_SESSION_PREFIX + user_number
-            request.session = self.SessionStore(session_key)
+            request.session = ForcedSessionIdSessionStore(session_key)
             request.user = SimpleLazyObject(
                 lambda: User.objects.get(number=user_number)
             )
