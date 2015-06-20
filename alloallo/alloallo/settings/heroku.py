@@ -10,8 +10,6 @@ LOGGING['handlers']['error_log'] = {
     'class': 'django.utils.log.AdminEmailHandler',
 }
 LOGGING['loggers']['django']['handlers'] = ['console']
-LOGGING['loggers']['django.request']['handlers'] = ['console']
-LOGGING['loggers']['django.db.backends']['handlers'] = ['console']
 LOGGING['loggers']['alloallo']['handlers'] = ['console']
 LOGGING['loggers']['alloallo']['level'] = 'DEBUG'
 LOGGING['loggers']['alloallo.request']['handlers'] = ['console']
@@ -30,10 +28,3 @@ TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
     )),
 )
-
-if not EMAIL_HOST:
-    EMAIL_HOST_USER = str(get_env_variable('SENDGRID_USERNAME'))
-    EMAIL_HOST_PASSWORD = str(get_env_variable('SENDGRID_PASSWORD'))
-    EMAIL_HOST = str('smtp.sendgrid.net')
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True

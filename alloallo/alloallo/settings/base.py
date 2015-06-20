@@ -151,6 +151,7 @@ LOGGING = {
     }
 }
 
+<<<<<<< HEAD
 AUTH_USER_MODEL = 'authtools.User'
 
 # Use Django templates using the new Django 1.8 TEMPLATES settings
@@ -181,3 +182,7 @@ TEMPLATES = [
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+
+TWILIO_TEST_SID = 'AC2728c00f4891d511c061192e87fcb371'
+TWILIO_TEST_TOKEN = '663b4ef990a9&c485#5CxQb1f9a'
