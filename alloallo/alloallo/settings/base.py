@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'alloallo.profiles',
     'alloallo.accounts',
+    'alloallo.payments',
 )
 
 MIDDLEWARE_CLASSES = (
