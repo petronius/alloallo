@@ -26,6 +26,7 @@ BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), '..', '..')
 # Application definition
 INSTALLED_APPS = (
     'alloallo.alloallo',
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
