@@ -67,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    bt_customer_id = models.IntegerField()
+    bt_customer_id = models.IntegerField(default=-1)
 
     USERNAME_FIELD = 'number'
     REQUIRED_FIELDS = []
