@@ -3,13 +3,18 @@ from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.views import generic
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse as dreverse
 
 from twilio import twiml
 
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
+
+
+def reverse(name, *args, **kwargs):
+    name = 'twiliobox:{}'.format(name)
+    return dreverse(name, *args, **kwargs)
 
 
 class IncomingCall(generic.View):
