@@ -15,8 +15,10 @@
       <a href="{% url 'profiles:edit_self' %}" class="btn btn-info">Edit Profile</a>
       {% endif %}
     </div>
+    {% if show_user.profile.picture %}
     <div class="col-sm-2"><img title="profile picture" class="img-circle img-responsive" src="{% thumbnail show_user.profile.picture|default:'default_profile.png' 140x140 crop %}">
     </div>
+    {% endif %}
   </div>
 </div>
 
@@ -46,7 +48,8 @@
 	    <span class="sr-only">Permalink</span></a> {{ show_user.profile.get_absolute_url }}
 	</div>
         <div class="panel-body">
-	  <strong>Bio</strong>: {{ show_user.profile.bio }}
+	        <strong>Bio</strong>: {{ show_user.profile.bio|default:"" }}<br/>
+            <strong>Available for random</strong>: {{ show_user.profile.is_available_for_random|yesno:"Yeah!,No:(" }}
 	</div>
       </div>
     </div>
