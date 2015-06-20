@@ -1,4 +1,4 @@
 <li {% if active_link == "home" %}class="active"{% endif %}><a href="{% url 'home' %}">Home</a></li>
 <li {% if active_link == "about" %}class="active"{% endif %}><a href="{% url 'about' %}">About</a></li>
-<li {% if active_link == "friends" %}class="active"{% endif %}><a href="">Friends</a></li>
-<li {% if active_link == "add-friend" %}class="active"{% endif %}><a href="{% url 'find_friend' %}">Find friend</a></li>
+<li {% if active_link == "friends" %}class="active"{% endif %}><a href="{% url 'friends' %}">Friends</a></li>
+<li {% if active_link == "find-friend" %}class="active"{% endif %}><a href="{% url 'find_friend' %}">Find friend</a></li>

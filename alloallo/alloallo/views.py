@@ -28,6 +28,6 @@ class FindFriend(generic.FormView):
 
 
 class Friends(generic.ListView):
-    template_name = "friends.html"
+    template_name = "alloallo/friends.html"
     model = User
     paginate_by = 10

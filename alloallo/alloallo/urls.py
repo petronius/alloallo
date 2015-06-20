@@ -18,6 +18,7 @@ urlpatterns = [
 
     url(r'^about/$', views.AboutPage.as_view(), name='about'),
     url(r'^find-friend/$', views.FindFriend.as_view(), name='find_friend'),
+    url(r'^friends/$', views.Friends.as_view(), name='friends'),
     url(r'^$', views.HomePage.as_view(), name='home'),
 ]
 
