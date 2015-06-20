@@ -34,6 +34,8 @@ class IncomingCall(generic.View):
             # profile = Profile.objects.get(user__number='+48606509545')
             return HttpResponse(response)
 
+        auth.flush_user_session()
+
         if not user.profile.audio_description:
             response.say('Please record your audio description first')
             response.redirect(reverse('description_edit'))
