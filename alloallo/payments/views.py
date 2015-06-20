@@ -2,6 +2,8 @@
 import braintree
 import json
 
+from django.views import generic
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
@@ -41,3 +43,5 @@ def checkout(request):
     transaction.save()
     return HttpResponseRedirect(reverse("profiles:show_self"))
 
+class PaymentsPage(generic.TemplateView):
+    template_name = "payment.html"

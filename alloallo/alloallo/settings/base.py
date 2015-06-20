@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'authtools',
     'crispy_forms',
     'easy_thumbnails',
+    'django_bootstrap_typeahead',
+
     'alloallo.profiles',
     'alloallo.accounts',
     'alloallo.payments',
@@ -53,6 +55,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'alloallo.payments.middleware.PayMeNowMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

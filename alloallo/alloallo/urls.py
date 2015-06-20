@@ -10,13 +10,15 @@ from alloallo.payments import urls as payments_urls
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.HomePage.as_view(), name='home'),
-    url(r'^about/$', views.AboutPage.as_view(), name='about'),
     url(r'^users/', include(profiles_urls, namespace='profiles')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(accounts_urls, namespace='accounts')),
     url(r'^calls/', include(twiliobox_urls, namespace='twiliobox')),
     url(r'^payments/', include(payments_urls, namespace='payments')),
+
+    url(r'^about/$', views.AboutPage.as_view(), name='about'),
+    url(r'^find-friend/$', views.FindFriend.as_view(), name='find_friend'),
+    url(r'^$', views.HomePage.as_view(), name='home'),
 ]
 
 # User-uploaded files like profile pics need to be served in development

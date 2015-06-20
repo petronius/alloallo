@@ -26,10 +26,13 @@ class TwilioSessionMiddleware(object):
         if 'HTTP_X_TWILIO_SIGNATURE' not in request.META:
             return
 
+        request.ignore_check = True
         try:
             user_number = request.POST['From']
             session_key = TWILIO_SESSION_PREFIX + user_number
             request.session = ForcedSessionIdSessionStore(session_key)
-            request.user = SimpleLazyObject(lambda: User.objects.get(number=user_number))
+            request.user = SimpleLazyObject(
+                lambda: User.objects.get(number=user_number)
+            )
         except ObjectDoesNotExist:
             pass
