@@ -10,8 +10,6 @@ LOGGING['handlers']['error_log'] = {
     'class': 'django.utils.log.AdminEmailHandler',
 }
 LOGGING['loggers']['django']['handlers'] = ['console']
-LOGGING['loggers']['django.request']['handlers'] = ['console']
-LOGGING['loggers']['django.db.backends']['handlers'] = ['console']
 LOGGING['loggers']['alloallo']['handlers'] = ['console']
 LOGGING['loggers']['alloallo']['level'] = 'DEBUG'
 LOGGING['loggers']['alloallo.request']['handlers'] = ['console']
