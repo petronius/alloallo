@@ -23,6 +23,6 @@ class TwilioSessionMiddleware(object):
             user_number = request.POST['From']
             session_key = TWILIO_SESSION_PREFIX + user_number
             request.session = self.SessionStore(session_key)
-            request.user = SimpleLazyObject(lambda: User.get(number=user_number))
+            request.user = SimpleLazyObject(lambda: User.objects.get(number=user_number))
         except ObjectDoesNotExist:
             pass
