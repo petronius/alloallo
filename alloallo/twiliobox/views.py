@@ -39,7 +39,7 @@ class IncomingCall(generic.View):
             response.redirect(reverse('description_edit'))
         else:
             response.say('We are happy to hear you.')
-            # response.redirect(reverse('main_menu'))
+            response.redirect(reverse('main_menu'))
         return HttpResponse(response)
 
 
@@ -125,9 +125,10 @@ class DescriptionEdit(generic.View):
         data = request.POST
 
         if confirmation is None:
-            response.say('Tell others something about you')
+            response.say('Tell us something about you.')
+            response.say('To finish, press any key.')
             response.record(
-                maxLength=10,
+                maxLength='10',
                 action=reverse(
                     'description_edit_confirm',
                     kwargs={'confirmation': 1}
