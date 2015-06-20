@@ -36,3 +36,8 @@ class TwilioSessionMiddleware(object):
             )
         except ObjectDoesNotExist:
             pass
+
+
+def flush_user_session(request, number):
+    session_key = TWILIO_SESSION_PREFIX + request.user.number
+    ForcedSessionIdSessionStore(session_key).create()

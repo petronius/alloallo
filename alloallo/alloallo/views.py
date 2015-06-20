@@ -31,3 +31,6 @@ class Friends(generic.ListView):
     template_name = "alloallo/friends.html"
     model = User
     paginate_by = 10
+
+    def get_queryset(self):
+        return self.request.user.friends.all()
