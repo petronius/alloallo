@@ -21,54 +21,127 @@ class IncomingCall(generic.View):
     """ Handle incoming view """
 
     def post(self, request):
-        data = request.POST
-        number = data['From']
         response = twiml.Response()
+        response.say('Welcome to Allo Allo!', voice='alice')
 
-        response.say('Welcome to Allo Allo!')
-
-        try:
-            profile = Profile.objects.get(user__number=number)
-        except ObjectDoesNotExist:
-            response.say('Please visit our site to create an account')
+        user = request.user
+        if not user or not user.is_paid:
+            if not user:
+                response.say('Please visit our site to create an account.')
+            if not user.is_paid:
+                response.say('Please visit our site to make a payment.')
+            # profile = Profile.objects.get(user__number=number)
+            # profile = Profile.objects.get(user__number='+48606509545')
             return HttpResponse(response)
 
-        if not profile.audio_description:
+        auth.flush_user_session()
+
+        if not user.profile.audio_description:
             response.say('Please record your audio description first')
             response.redirect(reverse('description_edit'))
         else:
             response.say('We are happy to hear you.')
-            # response.redirect(reverse('main_menu'))
+            response.redirect(reverse('main_menu'))
         return HttpResponse(response)
 
 
-class MainMenu(generic.View):
+class ViewWithHandler(generic.View):
+    """
+    Use default post to do whatever you want, and post_handler method
+    to do something with selected option
+    """
 
-    def get(self, request):
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            if request.POST.get('Digits'):
+                digits = request.POST['Digits']
+                return self.post_handler(
+                    request, digits, *args, **kwargs
+                )
+            return self.post(request, *args, **kwargs)
+        return super(ViewWithHandler, self).dispatch(
+            request, *args, **kwargs
+        )
+
+
+class MainMenu(ViewWithHandler):
+    """ Main voice menu view (that sounds stupid...) """
+
+    menu_options = [
+        {
+            'desc': 'Call a stranger',
+            # 'url': reverse('call_random_person'),
+        },
+        {
+            'desc': 'Call a friend',
+            # 'url': reverse('call_friend'),
+        },
+        {
+            'desc': 'Post to your wall',
+            # 'url': reverse('post_to_wall'),
+        },
+        {
+            'desc': 'Go to Profile settings',
+            # 'url': reverse('profile_settings'),
+        },
+    ]
+
+    @property
+    def saidable_menu(self):
+        result = []
+        for i, menu_dict in enumerate(self.menu_options, 1):
+            result.append(
+                'To {}, press {}'.format(menu_dict['desc'], i)
+            )
+        return '.\n'.join(result)
+
+    def post(self, request):
         response = twiml.Response()
-        response.say('This is the main menu')
+        response.say('Please select an option.', voice='woman')
+
+        with response.gather(
+            numDigits=1,
+            action=reverse('main_menu'),
+            method='POST',
+            timeout=15,
+        ) as g:
+            g.say(self.saidable_menu, loop=3)
+
+        return HttpResponse(response)
+
+    def post_handler(self, request, digit):
+        menu_index = int(digit) - 1  # menu is presented starting from 1
+        selected = self.menu_options[menu_index]
+
+        response = twiml.Response()
+        response.say(
+            'You decided to {}'.format(selected['desc'])
+        )
         return HttpResponse(response)
 
 
 class DescriptionEdit(generic.View):
 
-    def get(self, request, confirmation=None):
+    def post(self, request, confirmation=None):
         response = twiml.Response()
         data = request.POST
 
         if confirmation is None:
-            response.say('Tell others something about you in 30 seconds')
+            response.say('Tell us something about you.')
+            response.say('To finish, press any key.')
             response.record(
-                maxLength='30',
+                maxLength='10',
                 action=reverse(
-                    'description_edit', kwargs={'confirmation': True}
+                    'description_edit_confirm',
+                    kwargs={'confirmation': 1}
                 ),
             )
         elif data.get("RecordingUrl", None):
             recording_url = data.get("RecordingUrl", None)
-            response.say('Thank you. Here is your description')
-            response.play(recording_url)
-            # TODO: save it to Profile.audio_description
+            response.say('Thank you.')
+            request.user.profile.audio_description = recording_url
+            request.user.profile.save()
+            # response.play(recording_url)
             response.redirect(reverse('main_menu'))
 
         return HttpResponse(response)

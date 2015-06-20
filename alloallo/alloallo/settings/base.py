@@ -44,15 +44,18 @@ INSTALLED_APPS = (
 
     'alloallo.profiles',
     'alloallo.accounts',
+    'alloallo.payments',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'alloallo.twiliobox.auth.TwilioSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'alloallo.payments.middleware.PayMeNowMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
