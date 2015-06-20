@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }}Payment information{% endblock %}
+
+{% block container %}
+
+<div class="container">
+  <h1 class="text-primary">Please enter your payment details</h1>
+  <hr>
+  <div class="row">
+    <div class="col-md-9">
+      <form id="checkout" method="post" action="{% url "payments:checkout" %}">
+        <div id="payment-form"></div>
+        <input type="submit" value="Subscribe">
+      </form>
+      <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+      <script>
+        braintree.setup("{{ user.get_client_token }}", "dropin", {
+          container: "payment-form"
+        });
+      </script>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
