@@ -26,6 +26,7 @@ class BaseProfile(models.Model):
     audio_description = models.CharField(
         "Audio description", max_length=1024, null=True
     )
+    is_available_for_random = models.BooleanField(default=False)
 
     class Meta:
         abstract = True

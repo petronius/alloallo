@@ -40,4 +40,4 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = models.Profile
-        fields = ['picture', 'bio']
+        fields = ['picture', 'bio', 'is_available_for_random']
