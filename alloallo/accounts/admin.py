@@ -18,7 +18,7 @@ USERNAME_FIELD = User.USERNAME_FIELD
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(User.REQUIRED_FIELDS)
 
 BASE_FIELDS = (None, {
-    'fields': REQUIRED_FIELDS + ('password', 'first_name', 'last_name'),
+    'fields': REQUIRED_FIELDS + ('password', 'first_name', 'last_name', 'friends'),
 })
 
 SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {
@@ -60,7 +60,7 @@ class NewUserAdmin(NamedUserAdmin):
     # was a workaround.
     def permalink(self, obj):
         url = reverse("profiles:show",
-                      kwargs={"slug": obj.profile.slug})
+                      kwargs={"pk": obj.pk})
         # Unicode hex b6 is the Pilcrow sign
         return '<a href="{}">{}</a>'.format(url, '\xb6')
     permalink.allow_tags = True

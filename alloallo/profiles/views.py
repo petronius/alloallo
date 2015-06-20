@@ -12,7 +12,7 @@ from . import models
 
 class ShowProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = "profiles/show_profile.html"
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
 
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
@@ -24,7 +24,21 @@ class ShowProfile(LoginRequiredMixin, generic.TemplateView):
         if user == self.request.user:
             kwargs["editable"] = True
         kwargs["show_user"] = user
+        kwargs['pk'] = user.pk
         return super(ShowProfile, self).get(request, *args, **kwargs)
+
+    def post(self, request, pk, *args, **kwargs):
+        user = get_object_or_404(User, pk=pk)
+        request.user.friends.add(user)
+        messages.success(request, "User has been added to your friends.")
+
+        return self.get(request, pk, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ShowProfile, self).get_context_data(**kwargs)
+        ctx['can_add_as_friend'] = \
+            self.request.user.friends.filter(pk=kwargs['pk']).count() <= 0
+        return ctx
 
 
 class EditProfile(LoginRequiredMixin, generic.TemplateView):
