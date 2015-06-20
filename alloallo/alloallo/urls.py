@@ -1,23 +1,19 @@
-from __future__ import unicode_literals, absolute_import
-
-from django.conf import settings
-from django.conf.urls import patterns, include, url
-from django.conf.urls.static import static
+from django.conf.urls import include, url
 from django.contrib import admin
-
+from django.conf import settings
+from django.conf.urls.static import static
+from alloallo.profiles import urls as profiles_urls
+from alloallo.accounts import urls as accounts_urls
 from . import views
 
-# from rest_framework import routers
-# from ..leagues.api.viewsets import LeagueViewSet
-# router = routers.DefaultRouter()
-# router.register(r'leagues', LeagueViewSet)
+urlpatterns = [
+    url(r'^$', views.HomePage.as_view(), name='home'),
+    url(r'^about/$', views.AboutPage.as_view(), name='about'),
+    url(r'^users/', include(profiles_urls, namespace='profiles')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(accounts_urls, namespace='accounts')),
+]
 
-# router.urls
+# User-uploaded files like profile pics need to be served in development
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-admin.autodiscover()
-
-urlpatterns = patterns(
-    '',
-    url(r'^', views.HomeView.as_view(), name='home'),
-    # url(r'', include('alloallo.home.urls', namespace="home")),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
