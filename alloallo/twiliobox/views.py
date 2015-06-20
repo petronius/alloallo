@@ -9,6 +9,8 @@ from django.core.urlresolvers import reverse as dreverse
 
 from twilio import twiml
 
+from . import auth
+
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
@@ -36,7 +38,7 @@ class IncomingCall(generic.View):
             # profile = Profile.objects.get(user__number='+48606509545')
             return HttpResponse(response)
 
-        auth.flush_user_session()
+        auth.flush_user_session(request, request.user.number)
 
         if not user.profile.audio_description:
             response.say('Please record your audio description first')
@@ -174,7 +176,6 @@ class RandomCall(ViewWithHandler):
             if profile.audio_description:
                 return profile
 
-
     def get_last_profile(self, request):
         user_id = request.session.get("last_played_profile")
         profile = Profile.objects.get(user_id=user_id)
@@ -182,9 +183,12 @@ class RandomCall(ViewWithHandler):
 
     def post(self, request):
         response = twiml.Response()
-        response.say('Now playing a new user profile.'+
-            ' Press 1 at any time to start a conversation, and 2 to skip to the'+
-            ' next profile', voice='woman')
+        response.say(
+            'Now playing a new user profile. ' +
+            'Press 1 at any time to start a conversation, ' +
+            'and 2 to skip to the ' +
+            'next profile',
+            voice='woman')
 
         user_profile = self.get_random_profile(request)
         if not user_profile:
@@ -212,11 +216,17 @@ class RandomCall(ViewWithHandler):
             # Give them another choice
             return self.post(request)
 
-
-    def setup_conversation(self, profile2):
+    def setup_conversation(self, call_to_profile):
         response = twiml.Response()
-        response.say("Connecting you to your selected user.")
-        response.dial(profile2.user.number)
+        response.say("Connecting you to selected user.")
+
+        dial = response.dial()
+        # This will introduce caller to the called person
+        introduction_url = reverse(
+            'twiliobox:introduce',
+            kwargs={'user_pk': self.request.user.pk}
+        )
+        dial.number(call_to_profile.user.number, url=introduction_url)
+
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)
-       
