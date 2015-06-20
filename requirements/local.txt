@@ -2,4 +2,3 @@
 
 django-pdb
 django-debug-toolbar
-twilio
