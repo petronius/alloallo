@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'authtools',
     'crispy_forms',
     'easy_thumbnails',
+    'django_bootstrap_typeahead',
+
     'alloallo.profiles',
     'alloallo.accounts',
 )

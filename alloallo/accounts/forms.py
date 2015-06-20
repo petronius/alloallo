@@ -12,6 +12,9 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 
+from alloallo.accounts.models import User
+
+
 class LoginForm(forms.Form):
     """
     Base class for authenticating users. Extend this to get a form that accepts
@@ -57,7 +60,7 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError(
                     self.error_messages['invalid_login'],
                     code='invalid_login',
-                    params={'username': self.username_field.verbose_name},
+                    params={'username': 'username'},
                 )
             else:
                 self.confirm_login_allowed(self.user_cache)
@@ -142,4 +145,13 @@ class SetPasswordForm(authforms.SetPasswordForm):
                   autofocus=""),
             Field('new_password2', placeholder="Enter new password (again)"),
             Submit('pass_change', 'Change Password', css_class="btn-warning"),
-            )
+        )
+
+
+from django_bootstrap_typeahead.fields import TypeaheadField
+
+
+class SearchForm(forms.Form):
+    friend = TypeaheadField(
+        queryset=User.objects.all(),
+    )
