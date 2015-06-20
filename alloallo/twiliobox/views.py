@@ -29,6 +29,7 @@ class IncomingCall(generic.View):
 
         try:
             profile = Profile.objects.get(user__number=number)
+            # profile = Profile.objects.get(user__number='+48606509545')
         except ObjectDoesNotExist:
             response.say('Please visit our site to create an account')
             return HttpResponse(response)
@@ -44,7 +45,7 @@ class IncomingCall(generic.View):
 
 class MainMenu(generic.View):
 
-    def get(self, request):
+    def post(self, request):
         response = twiml.Response()
         response.say('This is the main menu')
         return HttpResponse(response)
@@ -52,7 +53,7 @@ class MainMenu(generic.View):
 
 class DescriptionEdit(generic.View):
 
-    def get(self, request, confirmation=None):
+    def post(self, request, confirmation=None):
         response = twiml.Response()
         data = request.POST
 
@@ -61,7 +62,8 @@ class DescriptionEdit(generic.View):
             response.record(
                 maxLength='30',
                 action=reverse(
-                    'description_edit', kwargs={'confirmation': True}
+                    'description_edit_confirm',
+                    kwargs={'confirmation': 1}
                 ),
             )
         elif data.get("RecordingUrl", None):
