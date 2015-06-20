@@ -151,7 +151,6 @@ LOGGING = {
     }
 }
 
-<<<<<<< HEAD
 AUTH_USER_MODEL = 'authtools.User'
 
 # Use Django templates using the new Django 1.8 TEMPLATES settings
