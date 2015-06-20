@@ -21,20 +21,20 @@ class IncomingCall(generic.View):
     """ Handle incoming view """
 
     def post(self, request):
-        data = request.POST
-        number = data['From']
         response = twiml.Response()
-
         response.say('Welcome to Allo Allo!', voice='alice')
 
-        try:
-            profile = Profile.objects.get(user__number=number)
+        user = request.user
+        if not user or not user.is_paid:
+            if not user:
+                response.say('Please visit our site to create an account.')
+            if not user.is_paid:
+                response.say('Please visit our site to make a payment.')
+            # profile = Profile.objects.get(user__number=number)
             # profile = Profile.objects.get(user__number='+48606509545')
-        except ObjectDoesNotExist:
-            response.say('Please visit our site to create an account')
             return HttpResponse(response)
 
-        if not profile.audio_description:
+        if not user.profile.audio_description:
             response.say('Please record your audio description first')
             response.redirect(reverse('description_edit'))
         else:
@@ -136,9 +136,10 @@ class DescriptionEdit(generic.View):
             )
         elif data.get("RecordingUrl", None):
             recording_url = data.get("RecordingUrl", None)
-            response.say('Thank you. Here is your description')
-            response.play(recording_url)
-            # TODO: save it to Profile.audio_description
+            response.say('Thank you.')
+            request.user.profile.audio_description = recording_url
+            request.user.profile.save()
+            # response.play(recording_url)
             response.redirect(reverse('main_menu'))
 
         return HttpResponse(response)
