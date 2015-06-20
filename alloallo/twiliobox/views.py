@@ -143,3 +143,52 @@ class DescriptionEdit(generic.View):
             response.redirect(reverse('main_menu'))
 
         return HttpResponse(response)
+
+
+class RandomCall(ViewWithHandler):
+
+    def get_random_profile(self):
+        return Profile.objects.filter(audio_description__isnull=False).order_by('?').first()
+
+    def get_last_profile(self, request):
+        user_id = request.session.get("last_played_profile")
+        profile = Profile.objects.get(user_id=user_id)
+        return profile
+
+    def post(self, request):
+        response = twiml.Response()
+        response.say('Now playing a new user profile.'+
+            ' Press 1 at any time to start a conversation, and 2 to skip to the'+
+            ' next profile', voice='woman')
+
+        user_profile = self.get_random_profile()
+        request.session["last_played_profile"] = user_profile.user.id
+        audio_url = user_profile.audio_description
+        # play the profile
+        with response.gather(
+            numDigits=1,
+            action=reverse('call_random_person'),
+            method='POST',
+            timeout=40,
+        ) as g:
+            g.play(audio_url, loop=2)
+
+        return HttpResponse(response)
+
+    def post_handler(self, request, digit):
+        request_talk = (digit == "1")
+        if request_talk:
+            other_profile = self.get_last_profile(request)
+            return self.setup_conversation(other_profile)
+        else:
+            # Give them another choice
+            return self.post(request)
+
+
+    def setup_conversation(self, profile2):
+        response = twiml.Response()
+        response.say("Connecting you to your selected user.")
+        response.dial(profile2.user.number)
+        response.say("The call failed or the user hung up.")
+        return HttpResponse(response)
+        
