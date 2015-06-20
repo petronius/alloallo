@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
-
-from django.views.generic import TemplateView
+from django.views import generic
 
 
-class HomeView(TemplateView):
-    template_name = 'alloallo/home.html'
+class HomePage(generic.TemplateView):
+    template_name = "home.html"
+
+
+class AboutPage(generic.TemplateView):
+    template_name = "about.html"

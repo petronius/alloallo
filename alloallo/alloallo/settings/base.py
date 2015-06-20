@@ -32,6 +32,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'authtools',
+    'crispy_forms',
+    'easy_thumbnails',
+    'alloallo.profiles',
+    'alloallo.accounts',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,11 +65,6 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'alloallo', 'alloallo', 'templates'),
 )
 
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
@@ -149,3 +150,34 @@ LOGGING = {
         },
     }
 }
+
+AUTH_USER_MODEL = 'authtools.User'
+
+# Use Django templates using the new Django 1.8 TEMPLATES settings
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            # insert more TEMPLATE_DIRS here
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]

@@ -7,3 +7,8 @@ psycopg2
 # app
 Django>=1.8
 Pillow
+django-braces>=1.8.0
+django-crispy-forms>=1.4.0
+django-admin-bootstrapped>=2.4.0
+django-authtools>=1.2.0
+easy-thumbnails>=2.2
