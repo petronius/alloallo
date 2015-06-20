@@ -1,8 +1,10 @@
 from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
+
 from . import views
 
 urlpatterns = [
-    url(r'^incoming$', views.IncomingCall.as_view(), name='incoming_call'),
+    url(r'^incoming$', csrf_exempt(views.IncomingCall.as_view()), name='incoming_call'),
     url(r'^description_edit$', views.DescriptionEdit.as_view(),
         name='description_edit'),
     # url(r'^description_view$', views.DescriptionView.as_view(),
