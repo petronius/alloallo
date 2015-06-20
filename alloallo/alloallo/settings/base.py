@@ -3,6 +3,7 @@ import os.path
 
 from django.core.exceptions import ImproperlyConfigured
 
+from .braintree import *
 
 gettext_noop = lambda s: s
 
