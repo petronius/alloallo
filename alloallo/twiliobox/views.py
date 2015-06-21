@@ -263,7 +263,7 @@ class RandomCall(ViewWithHandler):
 
     def setup_conversation(self, call_to_profile):
         response = twiml.Response()
-        response.say("Connecting you to selected user.")
+        response.say("Connecting to selected user.")
         self.request.session['conversation_succeded'] = True
 
         dial = response.dial(
@@ -275,7 +275,11 @@ class RandomCall(ViewWithHandler):
             kwargs={'user_pk': self.request.user.pk}
         )
 
-        dial.number(call_to_profile.user.number, url=introduction_url)
+        dial.number(
+            call_to_profile.user.number,
+            url=introduction_url,
+            callerId=settings.TWILIO_NUMBER
+        )
 
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)
