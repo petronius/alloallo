@@ -29,8 +29,8 @@ class TwilioSessionMiddleware(object):
         request.ignore_check = True
         try:
             user_number = request.POST['From']
-            # user_number = '+491793522402'
-            user_number = '+48606509545'
+            # # user_number = '+491793522402'
+            # user_number = '+48606509545'
             session_key = TWILIO_SESSION_PREFIX + user_number
             request.session = ForcedSessionIdSessionStore(session_key)
             request.user = SimpleLazyObject(
