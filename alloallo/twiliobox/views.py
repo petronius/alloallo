@@ -187,7 +187,7 @@ class RandomCall(ViewWithHandler):
         response.say(
             'Now playing a new user profile. ' +
             'Press 1 at any time to start a conversation, ' +
-            'and # to skip to the next profile.',
+            'and hash to skip to the next profile.',
             voice='woman')
 
         user_profile = self.get_random_profile(request)
