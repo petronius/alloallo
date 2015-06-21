@@ -29,7 +29,7 @@ class IncomingCall(generic.View):
 
     def post(self, request):
         response = twiml.Response()
-        response.say('Welcome to Allo Allo!', voice='alice')
+        response.say('Welcome to Allo Allo!', voice='woman')
 
         user = request.user
         if not user or not user.is_paid:
