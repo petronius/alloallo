@@ -223,7 +223,7 @@ class RandomCall(ViewWithHandler):
         dial = response.dial()
         # This will introduce caller to the called person
         introduction_url = reverse(
-            'twiliobox:introduce',
+            'introduce',
             kwargs={'user_pk': self.request.user.pk}
         )
         dial.number(call_to_profile.user.number, url=introduction_url)
