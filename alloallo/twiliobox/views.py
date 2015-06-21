@@ -286,3 +286,10 @@ class RandomCall(ViewWithHandler):
 
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)
+
+
+class WallPost(ViewWithHandler):
+    pass
+
+class ListenToWall(ViewWithHandler):
+    pass
