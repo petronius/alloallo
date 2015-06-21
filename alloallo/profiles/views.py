@@ -24,7 +24,7 @@ class ShowProfile(LoginRequiredMixin, generic.TemplateView):
         if user == self.request.user:
             kwargs["editable"] = True
         kwargs["show_user"] = user
-        kwargs['pk'] = user.pk
+
         return super(ShowProfile, self).get(request, *args, **kwargs)
 
     def post(self, request, pk, *args, **kwargs):
@@ -36,8 +36,11 @@ class ShowProfile(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super(ShowProfile, self).get_context_data(**kwargs)
-        ctx['can_add_as_friend'] = \
-            self.request.user.friends.filter(pk=kwargs['pk']).count() <= 0
+        if not 'pk' in kwargs:
+            ctx['my_profile'] = True
+        else:
+            ctx['can_add_as_friend'] = \
+                self.request.user.friends.filter(pk=kwargs['pk']).count() <= 0
         return ctx
 
 

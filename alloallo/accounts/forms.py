@@ -10,7 +10,8 @@ from django.contrib.auth import forms as authforms
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
-
+from django_bootstrap_typeahead.fields import TypeaheadField
+from django.core.validators import RegexValidator
 
 from alloallo.accounts.models import User
 
@@ -110,6 +111,11 @@ class SignupForm(authtoolsforms.UserCreationForm):
             Field('password2', placeholder="Re-enter Password"),
             Submit('sign_up', 'Sign up', css_class="btn-warning"),
         )
+        phone_regex = RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Phone number must be entered in the format: '+999999999'."
+                    " Up to 15 digits allowed.")
+        self.fields[User.USERNAME_FIELD].validators.append(phone_regex)
 
     def save(self, commit=True):
         # Save the provided password in hashed format
@@ -163,7 +169,7 @@ class SetPasswordForm(authforms.SetPasswordForm):
         )
 
 
-from django_bootstrap_typeahead.fields import TypeaheadField
+
 
 
 class SearchForm(forms.Form):
