@@ -77,11 +77,13 @@
 
     {% block messages %}
       {% if messages %}
+        <div class="container" style="margin-bottom: 10px; padding-left: 0; padding-right: 0; margin-top: 8px;">
         {% for message in messages %}
           <div class="alert alert-{{ message.tags }}">  <!-- singular -->
             <a class="close" data-dismiss="alert">×</a>
             {{ message|safe }}
           </div>
+        </div>
         {% endfor %}
       {% endif %}
     {% endblock %}
