@@ -22,13 +22,16 @@
   <div class="jumbotron jumbotron-carousel corporate-jumbo">
     <div class="container">
       <div class="row">
-        <div class="col-md-8 col-sm-8">
-          <h1>{% include "_brandname.html" %}</h1>
+        <div class="col-sm-12">
+          {% if user.is_anonymous %}
+            <h1>{% include "_brandname.html" %}</h1>
+          {% else %}
+            <h1>Call {{ MAIN_INCOMING_NUMBER }}</h1>
+          {% endif %}
           <p>Social networking for people who don't like computers.</p>
-	  <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up for Free!</a>
-        </div>
-        <div class="col-md-4 col-sm-4">
-
+          {% if user.is_anonymous %}
+	          <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up!</a>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -41,20 +44,23 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-lg-4">
-      <h2>FAQ</h2>
-      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-      <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+    <div class="col-md-4">
+      <h2>Sign up</h2>
+      <p>Use <a href="{% url 'accounts:signup' %}">registration form</a> to sign up. </p>
+      <p><a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up!</a></p>
     </div>
-    <div class="col-lg-4">
-      <h2>Prices</h2>
-      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-      <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+    <div class="col-md-4">
+      <h2>Fill out your profile</h2>
+      <p>Add your pyament information. </p>
     </div>
-    <div class="col-lg-4">
-      <h2>Technology</h2>
-      <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
-      <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+    <div class="col-md-4">
+      <h2>Call</h2>
+      <p>We use different phone numbers to lower your costs. Call the number based on your location:</p>
+      <ul>
+        {% for country, number in INCOMING_NUMBERS %}
+          <li><span class="flag-icon flag-icon-{{ country }}"></span> {{ number }}</li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

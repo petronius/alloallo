@@ -184,6 +184,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'alloallo.alloallo.context_processors.global_variables',
             ],
         },
     },
@@ -200,6 +201,10 @@ TWILIO_TEST_TOKEN = '663b4ef990a9&c485#5CxQb1f9a'
 LOGIN_REDIRECT_URL = reverse_lazy("profiles:show_self")
 LOGIN_URL = reverse_lazy("accounts:login")
 
-TWILIO_NUMBER = '+16072334641'
-TWILIO_LIVE_SID = 'AC31fd5cdbb768c43ad9ab50f9de04db72'
-TWILIO_LIVE_TOKEN = 'f565ff4b0ca7f03f85c4711a8335255e'
+INCOMING_NUMBERS = [
+    ('de', '+49 511 87426946'),
+    ('pl', '+48 12 881 17 94'),
+    ('gb', '+44 115 824 2683'),
+    ('us', '+1 928 597 3291'),
+]
+MAIN_INCOMING_NUMBER = dict(INCOMING_NUMBERS)['de']
