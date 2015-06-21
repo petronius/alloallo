@@ -211,7 +211,7 @@ class DescriptionEdit(generic.View):
 class RandomCall(ViewWithHandler):
 
     def get_random_profile(self, request):
-        profiles = [p for p in Profile.objects.all()]
+        profiles = [p for p in Profile.objects.filter(is_available_for_random=True)]
         random.shuffle(profiles)
         for profile in profiles:
             try:
@@ -267,7 +267,8 @@ class RandomCall(ViewWithHandler):
         self.request.session['conversation_succeded'] = True
 
         dial = response.dial(
-            action=reverse('better_callback')
+            action=reverse('better_callback'),
+            callerId=settings.TWILIO_NUMBER,
         )
         # This will introduce caller to the called person
         introduction_url = reverse(
@@ -278,7 +279,6 @@ class RandomCall(ViewWithHandler):
         dial.number(
             call_to_profile.user.number,
             url=introduction_url,
-            callerId=settings.TWILIO_NUMBER
         )
 
         response.say("The call failed or the user hung up.")
@@ -396,9 +396,12 @@ class BetterCallback(generic.View):
 
         # Having call.to and call.from_ here
         # just an extra check
-        assert request.user == User.objects.get(number=call.from_)
+        # assert request.user == User.objects.get(number=call.from_)
 
-        user1 = User.objects.get(number=call.from_)
+        # we get from-user (caller) because when making a call,
+        # we set our callerId
+        user1 = request.user
+        # user1 = User.objects.get(number=call.from_)
         user2 = User.objects.get(number=call.to)
 
         self._make_a_call_and_add_friends(user1, user2)
