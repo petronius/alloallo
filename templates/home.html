@@ -23,11 +23,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          {% if user.is_anonymous %}
-            <h1>{% include "_brandname.html" %}</h1>
-          {% else %}
-            <h1>Call {{ MAIN_INCOMING_NUMBER }}</h1>
-          {% endif %}
+          <h1>Making it easier to stay in touch</h1>
           <p>Social networking for people who don't like computers.</p>
           {% if user.is_anonymous %}
 	          <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up!</a>
@@ -46,20 +42,24 @@
   <div class="row">
     <div class="col-md-4">
       <h2>Sign up</h2>
-      <p>Use <a href="{% url 'accounts:signup' %}">registration form</a> to sign up. </p>
+      <p>Use <a href="{% url 'accounts:signup' %}">registration form</a> to sign up and add your payment information. </p>
       <p><a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up!</a></p>
     </div>
     <div class="col-md-4">
-      <h2>Fill out your profile</h2>
-      <p>Add your pyament information. </p>
-    </div>
-    <div class="col-md-4">
       <h2>Call</h2>
-      <p>We use different phone numbers to lower your costs. Call the number based on your location:</p>
+      <p>Call the number based on your location:</p>
       <ul>
         {% for country, number in INCOMING_NUMBERS %}
           <li><span class="flag-icon flag-icon-{{ country }}"></span> {{ number }}</li>
         {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h2>Features</h2>
+      <ul>
+        <li>Record messages for family and friends</li>
+        <li>Listen to their messages</li>
+        <li>Find new friends</li>
       </ul>
     </div>
   </div>
