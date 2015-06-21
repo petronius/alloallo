@@ -129,7 +129,7 @@ class MainMenu(ViewWithHandler):
     menu_options = [
         {
             'desc': 'Call a stranger',
-            # 'url': reverse('call_random_person'),
+            'url': 'call_random_person',
         },
         {
             'desc': 'Call a friend',
@@ -176,6 +176,8 @@ class MainMenu(ViewWithHandler):
         response.say(
             'You decided to {}'.format(selected['desc'])
         )
+        if selected.get('url'):
+            response.redirect(reverse(selected['url']))
         return HttpResponse(response)
 
 
@@ -241,8 +243,7 @@ class RandomCall(ViewWithHandler):
         response.say(
             'Now playing a new user profile. ' +
             'Press 1 at any time to start a conversation, ' +
-            'and 2 to skip to the ' +
-            'next profile',
+            'and hash to skip to the next profile.',
             voice='woman')
 
         user_profile = self.get_random_profile(request)
