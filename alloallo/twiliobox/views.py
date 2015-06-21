@@ -13,6 +13,8 @@ from twilio.rest import TwilioRestClient
 
 from . import auth
 
+from . import auth
+
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
@@ -177,6 +179,17 @@ class MainMenu(ViewWithHandler):
         return HttpResponse(response)
 
 
+class Introduction(generic.View):
+    """ play an intorduction of user1 calling to user2 """
+    def post(self, request, user_pk):
+        response = twiml.Response()
+        response.say('Allo, allo! Someone is calling you!', voice='woman')
+        caller_profile = Profile.objects.get(user__pk=user_pk)
+        response.play(caller_profile.audio_description)
+        # TODO: check if the user wants to talk
+        return HttpResponse(response)
+
+
 class DescriptionEdit(generic.View):
 
     def post(self, request, confirmation=None):
@@ -218,7 +231,6 @@ class RandomCall(ViewWithHandler):
             if profile.audio_description:
                 return profile
 
-
     def get_last_profile(self, request):
         user_id = request.session.get("last_played_profile")
         profile = Profile.objects.get(user_id=user_id)
@@ -226,9 +238,12 @@ class RandomCall(ViewWithHandler):
 
     def post(self, request):
         response = twiml.Response()
-        response.say('Now playing a new user profile.'+
-            ' Press 1 at any time to start a conversation, and 2 to skip to the'+
-            ' next profile', voice='woman')
+        response.say(
+            'Now playing a new user profile. ' +
+            'Press 1 at any time to start a conversation, ' +
+            'and 2 to skip to the ' +
+            'next profile',
+            voice='woman')
 
         user_profile = self.get_random_profile(request)
         if not user_profile:
@@ -256,11 +271,17 @@ class RandomCall(ViewWithHandler):
             # Give them another choice
             return self.post(request)
 
-
-    def setup_conversation(self, profile2):
+    def setup_conversation(self, call_to_profile):
         response = twiml.Response()
-        response.say("Connecting you to your selected user.")
-        response.dial(profile2.user.number)
+        response.say("Connecting you to selected user.")
+
+        dial = response.dial()
+        # This will introduce caller to the called person
+        introduction_url = reverse(
+            'introduce',
+            kwargs={'user_pk': self.request.user.pk}
+        )
+        dial.number(call_to_profile.user.number, url=introduction_url)
+
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)
-       

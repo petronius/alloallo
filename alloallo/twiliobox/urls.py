@@ -30,5 +30,8 @@ urlpatterns = [
     url(r'^main_menu$',
         csrf_exempt(views.MainMenu.as_view()),
         name='main_menu'),
+    url(r'^introduce/(?P<user_pk>[\d]+)$',
+        csrf_exempt(views.Introduction.as_view()),
+        name='introduce')
     # url(r'^(?P<slug>[\w\-]+)$', views.ShowProfile.as_view(), name='show'),
 ]
