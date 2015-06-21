@@ -211,7 +211,7 @@ class DescriptionEdit(generic.View):
 class RandomCall(ViewWithHandler):
 
     def get_random_profile(self, request):
-        profiles = [p for p in Profile.objects.all()]
+        profiles = [p for p in Profile.objects.filter(is_available_for_random=True)]
         random.shuffle(profiles)
         for profile in profiles:
             try:
@@ -263,11 +263,12 @@ class RandomCall(ViewWithHandler):
 
     def setup_conversation(self, call_to_profile):
         response = twiml.Response()
-        response.say("Connecting you to selected user.")
+        response.say("Connecting to selected user.")
         self.request.session['conversation_succeded'] = True
 
         dial = response.dial(
-            action=reverse('better_callback')
+            action=reverse('better_callback'),
+            callerId=settings.TWILIO_NUMBER,
         )
         # This will introduce caller to the called person
         introduction_url = reverse(
@@ -275,7 +276,10 @@ class RandomCall(ViewWithHandler):
             kwargs={'user_pk': self.request.user.pk}
         )
 
-        dial.number(call_to_profile.user.number, url=introduction_url)
+        dial.number(
+            call_to_profile.user.number,
+            url=introduction_url,
+        )
 
         response.say("The call failed or the user hung up.")
         return HttpResponse(response)

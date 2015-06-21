@@ -21,3 +21,7 @@
 .search_container .container {
   margin-bottom: 20px; height: 400px;
 }
+
+.dropdown {
+  margin-top: 6px;
+}
