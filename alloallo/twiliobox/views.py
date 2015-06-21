@@ -17,6 +17,7 @@ from . import auth
 
 Profile = apps.get_model('profiles.Profile')
 User = apps.get_model('accounts.User')
+WallPost = apps.get_model('twiliobox.WallPost')
 
 
 def reverse(name, *args, **kwargs):
@@ -136,10 +137,10 @@ class MainMenu(ViewWithHandler):
             'desc': 'Call a stranger',
             'url': 'call_random_person',
         },
-        {
-            'desc': 'Call a friend',
-            # 'url': 'call_friend',
-        },
+        #{
+        #    'desc': 'Call a friend',
+        #    # 'url': 'call_friend',
+        #},
         {
             'desc': 'Broadcast a story to your friends',
             'url': 'post_to_wall',
@@ -147,6 +148,10 @@ class MainMenu(ViewWithHandler):
         {
             'desc': 'Listen to your your friends\' wall posts',
             'url': 'listen_to_wall',
+        },
+        {
+            'desc': 'Edit your profile message',
+            'url': 'description_edit',
         },
         #{
         #    'desc': 'Go to Profile settings',
@@ -305,9 +310,8 @@ class PostToWall(generic.View):
         if confirmation is None:
             response.say('Please record your story after the beep.', voice="alice")
             response.say('To finish, press any key.', voice="alice")
-            response.say('Beep.')
             response.record(
-                maxLength='20',
+                maxLength='10',
                 action=reverse(
                     'post_to_wall_confirm',
                     kwargs={'confirmation': 1}
@@ -330,14 +334,16 @@ class ListenToWall(ViewWithHandler):
             for post in result:
                 if not result.was_played_for(user):
                     return friend, result
+        return None, None
 
     def post(self, request, confirmation=None):
         response = twiml.Response()
         user = request.user
-        friends = request.user.friends
+        friends = request.user.friends.all()
         friend, post = self.get_next_pending_wall_post(user, friends)
         if not post:
-            response.play("No stories from your friends are available.")
+            response.say("We're sorry, but no stories from your friends are available.", voice="alice")
+            response.redirect(reverse('main_menu'))
             return HttpResponse(response)
         msg = "Now playing a story from {} {}".format(friend.first_name, friend.last_name)
         response.say(msg)
