@@ -173,10 +173,14 @@ class MainMenu(ViewWithHandler):
 class Introduction(generic.View):
     """ play an intorduction of user1 calling to user2 """
     def post(self, request, user_pk):
-        response = twiml.Response()
-        response.say('Allo, allo! Someone is calling you!', voice='woman')
         caller_profile = Profile.objects.get(user__pk=user_pk)
+        caller_user = caller_profile.user
+        response = twiml.Response()
+        full_name = '{} {}'.format(caller_user.first_name, caller_user.last_name)
+        response.say('Allo, allo! {} is calling you!'.format(full_name), voice='woman')
+        response.say('Now playing their recorded introduction.', voice='woman')
         response.play(caller_profile.audio_description)
+        response.say('Please stay on the line util conversation begins', voice="woman")
         # TODO: check if the user wants to talk
         return HttpResponse(response)
 
