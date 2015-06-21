@@ -169,10 +169,12 @@ class SetPasswordForm(authforms.SetPasswordForm):
         )
 
 
-
-
-
 class SearchForm(forms.Form):
-    friend = TypeaheadField(
-        queryset=User.objects.all(),
-    )
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['friend'] = TypeaheadField(
+            queryset=User.objects.exclude(pk=request.user.pk).exclude(
+                pk__in=request.user.friends.all()))
+
