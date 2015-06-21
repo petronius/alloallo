@@ -40,7 +40,7 @@ class LoginForm(forms.Form):
         self.helper = FormHelper()
 
         self.helper.layout = Layout(
-            Field('number', placeholder="Enter Email", autofocus=""),
+            Field('number', placeholder="Enter phone no", autofocus=""),
             Field('password', placeholder="Enter Password"),
             HTML('<a href="{}">Forgot Password?</a>'.format(
                 reverse("accounts:password-reset"))),
