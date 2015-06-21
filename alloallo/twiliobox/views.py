@@ -300,6 +300,18 @@ class RandomCall(ViewWithHandler):
 
 
 class BetterCallback(generic.View):
+
+    def _make_a_call_and_add_friends(self, user1, user2):
+        client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
+        client.calls.create(
+            url=''.join([
+                self.request.build_absolute_uri(reverse('review_call')),
+                '?pk_from={}&pk_to={}'.format(user1.pk, user2.pk)
+            ]),
+            to=user1.number,
+            from_=settings.TWILIO_NUMBER
+        )
+
     def post(self, request):
         client = TwilioRestClient(
             settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
@@ -313,15 +325,9 @@ class BetterCallback(generic.View):
         user1 = User.objects.get(number=call.from_)
         user2 = User.objects.get(number=call.to)
 
-        client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
-        client.calls.create(
-            url=''.join([
-                self.request.build_absolute_uri(reverse('review_call')),
-                '?pk_from={}&pk_to={}'.format(user1.pk, user2.pk)
-            ]),
-            to=request.user.number,
-            from_=settings.TWILIO_NUMBER
-        )
+        self._make_a_call_and_add_friends(user1, user2)
+        self._make_a_call_and_add_friends(user2, user1)
+
         return HttpResponse('ok')
 
 
