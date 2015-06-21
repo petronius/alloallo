@@ -189,6 +189,7 @@ class DescriptionEdit(generic.View):
 
         if confirmation is None:
             response.say('Tell us something about you.')
+            response.pause()
             response.say('To finish, press any key.')
             response.record(
                 maxLength='10',
