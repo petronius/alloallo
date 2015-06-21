@@ -29,9 +29,16 @@ class IncomingCall(generic.View):
 
     def post(self, request):
         response = twiml.Response()
-        response.say('Welcome to Allo Allo!', voice='woman')
 
         user = request.user
+        if user and user.first_name and user.last_name:
+            response.say(
+                'Aallo aallo {} {}! Welcome to Aallo Aallo!',
+                voice='woman'
+            )
+        else:
+            response.say('Welcome to Allo Allo!', voice='woman')
+
         if not user or not user.is_paid:
             if not user:
                 response.say('Please visit our site to create an account.')
