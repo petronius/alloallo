@@ -41,7 +41,7 @@
     <div class="col-sm-4">
       <ul class="list-group">
         <li class="list-group-item text-muted">Profile</li>
-        <li class="list-group-item text-right"><span class="pull-left"><strong>Email:</strong></span> {{ show_user.email|default:"missing" }}
+        <li class="list-group-item text-right"><span class="pull-left"><strong>Number:</strong></span> {{ show_user.number|default:"missing" }}
 	  {% if show_user.profile.email_verified %}
 	    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" title="This email address has been verified"></span>
 	    <span class="sr-only">Verified</span>
@@ -71,4 +71,6 @@
 
 {% endblock %}
 
-
+{% block scripts %}
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+{% endblock scripts %}

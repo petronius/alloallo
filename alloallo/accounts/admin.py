@@ -18,7 +18,8 @@ USERNAME_FIELD = User.USERNAME_FIELD
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(User.REQUIRED_FIELDS)
 
 BASE_FIELDS = (None, {
-    'fields': REQUIRED_FIELDS + ('password', 'first_name', 'last_name', 'friends'),
+    'fields': REQUIRED_FIELDS +
+              ('password', 'first_name', 'last_name', 'friends', 'is_paid'),
 })
 
 SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {
