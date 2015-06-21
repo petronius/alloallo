@@ -18,6 +18,11 @@ class FindFriend(generic.FormView):
     template_name = "alloallo/find_friend.html"
     form_class = SearchForm
 
+    def get_form_kwargs(self):
+        kwargs = super(FindFriend, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get(self, request):
         friend = request.GET.get('friend')
         if friend:
