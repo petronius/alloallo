@@ -45,8 +45,8 @@ class IncomingCall(generic.View):
                 voice='woman'
             )
 
-        if not user or not user.is_paid:
-            if not user:
+        if not user or user.is_anonymous() or not user.is_paid:
+            if not user or user.is_anonymous():
                 response.say('Please visit our site to create an account.')
             if not user.is_paid:
                 response.say('Please visit our site to make a payment.')
