@@ -48,7 +48,7 @@ class IncomingCall(generic.View):
         if not user or user.is_anonymous() or not user.is_paid:
             if not user or user.is_anonymous():
                 response.say('Please visit our site to create an account.')
-            if not user.is_paid:
+            elif not user.is_paid:
                 response.say('Please visit our site to make a payment.')
             # profile = Profile.objects.get(user__number=number)
             # profile = Profile.objects.get(user__number='+48606509545')
