@@ -13,8 +13,6 @@ from twilio.rest import TwilioRestClient
 
 from . import auth
 
-from . import auth
-
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
@@ -241,9 +239,9 @@ class RandomCall(ViewWithHandler):
     def post(self, request):
         response = twiml.Response()
         response.say(
-            'Now playing a new user profile. ' +
-            'Press 1 at any time to start a conversation, ' +
-            'and hash to skip to the next profile.',
+            'Playing a random user profile. ' +
+            'Press 1 at any time to start a conversation. ' +
+            'Press 2 to skip to the next profile.',
             voice='woman')
 
         user_profile = self.get_random_profile(request)
