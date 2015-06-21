@@ -26,6 +26,11 @@ class FindFriend(generic.FormView):
         else:
             return super(FindFriend, self).get(request)
 
+    def get_form_kwargs(self):
+        kwargs = super(FindFriend, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
 
 class Friends(generic.ListView):
     template_name = "alloallo/friends.html"
