@@ -13,8 +13,6 @@ from twilio.rest import TwilioRestClient
 
 from . import auth
 
-from . import auth
-
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
@@ -31,9 +29,16 @@ class IncomingCall(generic.View):
 
     def post(self, request):
         response = twiml.Response()
-        response.say('Welcome to Allo Allo!', voice='alice')
 
         user = request.user
+        if user and user.first_name and user.last_name:
+            response.say(
+                'Aallo aallo {} {}! Welcome to Aallo Aallo!',
+                voice='woman'
+            )
+        else:
+            response.say('Welcome to Allo Allo!', voice='woman')
+
         if not user or not user.is_paid:
             if not user:
                 response.say('Please visit our site to create an account.')
@@ -245,9 +250,9 @@ class RandomCall(ViewWithHandler):
     def post(self, request):
         response = twiml.Response()
         response.say(
-            'Now playing a new user profile. ' +
-            'Press 1 at any time to start a conversation, ' +
-            'and hash to skip to the next profile.',
+            'Playing a random user profile. ' +
+            'Press 1 at any time to start a conversation. ' +
+            'Press 2 to skip to the next profile.',
             voice='woman')
 
         user_profile = self.get_random_profile(request)

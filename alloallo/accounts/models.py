@@ -100,7 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_client_token(self):
         # Make sure we have a customer id
-        if self.bt_customer_id < 1:
+        if not self.bt_customer_id or self.bt_customer_id < 1:
             self.create_customer_id()
             self.save()
         return braintree.ClientToken.generate({

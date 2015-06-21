@@ -21,7 +21,7 @@
       {% if can_add_as_friend %}
           <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary btn-lg active">Add to the friends</button>
+            <button type="submit" class="btn btn-primary btn-lg active">Add friends</button>
           </form>
       {% else %}
         <button type="button" class="btn btn-success" disabled="disabled">Your friend</button>
