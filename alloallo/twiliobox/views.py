@@ -267,7 +267,8 @@ class RandomCall(ViewWithHandler):
         self.request.session['conversation_succeded'] = True
 
         dial = response.dial(
-            action=reverse('better_callback')
+            action=reverse('better_callback'),
+            callerId=settings.TWILIO_NUMBER,
         )
         # This will introduce caller to the called person
         introduction_url = reverse(
@@ -278,7 +279,6 @@ class RandomCall(ViewWithHandler):
         dial.number(
             call_to_profile.user.number,
             url=introduction_url,
-            callerId=settings.TWILIO_NUMBER
         )
 
         response.say("The call failed or the user hung up.")
