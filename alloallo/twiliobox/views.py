@@ -133,16 +133,20 @@ class MainMenu(ViewWithHandler):
         },
         {
             'desc': 'Call a friend',
-            # 'url': reverse('call_friend'),
+            # 'url': 'call_friend',
         },
         {
-            'desc': 'Post to your wall',
-            # 'url': reverse('post_to_wall'),
+            'desc': 'Broadcast a story to your friends',
+            'url': 'post_to_wall',
         },
         {
-            'desc': 'Go to Profile settings',
-            # 'url': reverse('profile_settings'),
+            'desc': 'Listen to your your friends\' wall posts',
+            'url': 'listen_to_wall',
         },
+        #{
+        #    'desc': 'Go to Profile settings',
+        #    # 'url': 'profile_settings',
+        #},
     ]
 
     @property
@@ -288,8 +292,65 @@ class RandomCall(ViewWithHandler):
         return HttpResponse(response)
 
 
-class WallPost(ViewWithHandler):
-    pass
+class PostToWall(generic.View):
+    def post(self, request, confirmation=None):
+        response = twiml.Response()
+        data = request.POST
+
+        if confirmation is None:
+            response.say('Please record your story after the beep.', voice="alice")
+            response.say('To finish, press any key.', voice="alice")
+            response.say('Beep.')
+            response.record(
+                maxLength='20',
+                action=reverse(
+                    'post_to_wall_confirm',
+                    kwargs={'confirmation': 1}
+                ),
+            )
+        elif data.get("RecordingUrl", None):
+            recording_url = data.get("RecordingUrl", None)
+            response.say('Thank you. This story is now available to your friends.')
+            wpost = WallPost(user=request.user, message=recording_url)
+            wpost.save()
+
+        return HttpResponse(response)
+
 
 class ListenToWall(ViewWithHandler):
-    pass
+
+    def get_next_pending_wall_post(self, user, friends_list):
+        for friend in friends_list:
+            result = WallPost.objects.get(user=friend)
+            for post in result:
+                if not result.was_played_for(user):
+                    return friend, result
+
+    def post(self, request, confirmation=None):
+        response = twiml.Response()
+        user = request.user
+        friends = request.user.friends
+        friend, post = self.get_next_pending_wall_post(user, friends)
+        if not post:
+            response.play("No stories from your friends are available.")
+            return HttpResponse(response)
+        msg = "Now playing a story from {} {}".format(friend.first_name, friend.last_name)
+        response.say(msg)
+        resposne.say("Press 1 at any time to skip to the next message.")
+
+        with response.gather(
+            numDigits=1,
+            action=reverse('listen_to_wall'),
+            method='POST',
+            timeout=40,
+        ) as g:
+            post.mark_played_for(user)
+            post.save()
+            g.play(post.message, loop=1)
+
+        return HttpResponse(response)
+
+    def post_hander(self, request):
+        return self.post(request)
+
+
