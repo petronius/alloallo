@@ -108,21 +108,21 @@ class MainMenu(ViewWithHandler):
     """ Main voice menu view (that sounds stupid...) """
 
     menu_options = [
-        {
-            'desc': 'Call a stranger',
-            'url': 'call_random_person',
-        },
         #{
         #    'desc': 'Call a friend',
         #    # 'url': 'call_friend',
         #},
         {
+            'desc': "Listen to your your friends' wall posts",
+            'url': 'listen_to_wall',
+        },
+        {
             'desc': 'Broadcast a story to your friends',
             'url': 'post_to_wall',
         },
         {
-            'desc': 'Listen to your your friends\' wall posts',
-            'url': 'listen_to_wall',
+            'desc': 'Find a friend',
+            'url': 'call_random_person',
         },
         {
             'desc': 'Edit your profile message',
