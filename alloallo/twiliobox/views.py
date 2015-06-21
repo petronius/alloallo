@@ -340,8 +340,8 @@ class ListenToWall(ViewWithHandler):
 
         return HttpResponse(response)
 
-    def post_handler(self, request):
-        return self.post(request)
+    def post_handler(self, request, confirmation=None):
+        return self.post(request, confirmation)
 
 
 # class QuickTest(generic.View):
