@@ -1,18 +1,24 @@
 # from django.shortcuts import render
+from urllib.parse import quote_plus
 import random
 
 from django.apps import apps
+from django.conf import settings
 from django.views import generic
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse as dreverse
 
 from twilio import twiml
+from twilio.rest import TwilioRestClient
+
+from . import auth
 
 from . import auth
 
 # Create your views here.
 
 Profile = apps.get_model('profiles.Profile')
+User = apps.get_model('accounts.User')
 
 
 def reverse(name, *args, **kwargs):
@@ -45,6 +51,56 @@ class IncomingCall(generic.View):
         else:
             response.say('We are happy to hear you.')
             response.redirect(reverse('main_menu'))
+
+        request.session['conversation_succeded'] = True
+
+        return HttpResponse(response)
+
+
+class StatusCallback(generic.View):
+    def _do_return_call(self, number, other_number):
+        client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
+        call = client.calls.create(
+            url=self.request.build_absolute_uri(reverse('review_call')) + '?other_number=' + quote_plus(other_number),
+            to=number,
+            from_=settings.TWILIO_NUMBER
+        )
+        return call.sid
+
+    def post(self, request):
+        data = request.POST
+        if request.session.get('conversation_succeded'):
+            return_call_id = self._do_return_call(data['From'], data['To'])
+            request.session['conversation_succeded'] = False
+            return HttpResponse(return_call_id)
+        return HttpResponse('')
+
+
+class ReviewIncomingCall(generic.View):
+    def post(self, request):
+        response = twiml.Response()
+        other_number = request.GET['other_number']
+        response.say('You just talked with users with number {}.'.format(other_number))
+
+        with response.gather(
+            numDigits=1,
+            action=reverse('add_friend_call') + '?other_number=' + quote_plus(other_number),
+            method='POST',
+            timeout=15,
+        ) as g:
+            g.say('Press 1 to add him as a friend.', loop=1)
+
+        return HttpResponse(response)
+
+
+class AddFriendCall(generic.View):
+    def post(self, request):
+        response = twiml.Response()
+        other_number = request.GET['other_number']
+        user1 = request.user
+        user2 = User.objects.get(number=other_number)
+        user1.friends.add(user2)
+        response.say('You add number {} as a friend.'.format(other_number))
         return HttpResponse(response)
 
 

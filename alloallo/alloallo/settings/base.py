@@ -199,5 +199,6 @@ TWILIO_TEST_TOKEN = '663b4ef990a9&c485#5CxQb1f9a'
 LOGIN_REDIRECT_URL = reverse_lazy("profiles:show_self")
 LOGIN_URL = reverse_lazy("accounts:login")
 
+TWILIO_NUMBER = ''
 TWILIO_LIVE_SID = 'AC31fd5cdbb768c43ad9ab50f9de04db72'
 TWILIO_LIVE_TOKEN = 'f565ff4b0ca7f03f85c4711a8335255e'
