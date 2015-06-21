@@ -211,7 +211,7 @@ class DescriptionEdit(generic.View):
 class RandomCall(ViewWithHandler):
 
     def get_random_profile(self, request):
-        profiles = [p for p in Profile.objects.all()]
+        profiles = [p for p in Profile.objects.filter(is_available_for_random=True)]
         random.shuffle(profiles)
         for profile in profiles:
             try:
