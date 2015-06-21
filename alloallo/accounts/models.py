@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
         birth and password.
         """
         if not number:
-            raise ValueError('Users must have an email address')
+            raise ValueError('Users must have a phone number')
 
         user = self.model(number=number)
 
