@@ -309,10 +309,10 @@ class ListenToWall(ViewWithHandler):
 
     def get_next_pending_wall_post(self, user, friends_list):
         for friend in friends_list:
-            result = WallPost.objects.get(user=friend)
+            result = list(WallPost.objects.filter(user=friend))
             for post in result:
-                if not result.was_played_for(user):
-                    return friend, result
+                if not post.was_played_for(user):
+                    return friend, post
         return None, None
 
     def post(self, request, confirmation=None):
@@ -326,7 +326,7 @@ class ListenToWall(ViewWithHandler):
             return HttpResponse(response)
         msg = "Now playing a story from {} {}".format(friend.first_name, friend.last_name)
         response.say(msg)
-        resposne.say("Press 1 at any time to skip to the next message.")
+        response.say("Press 1 at any time to skip to the next message.")
 
         with response.gather(
             numDigits=1,
@@ -340,7 +340,7 @@ class ListenToWall(ViewWithHandler):
 
         return HttpResponse(response)
 
-    def post_hander(self, request):
+    def post_handler(self, request):
         return self.post(request)
 
 
