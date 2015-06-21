@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'alloallo.profiles',
     'alloallo.accounts',
     'alloallo.payments',
+    'alloallo.twiliobox',
 )
 
 MIDDLEWARE_CLASSES = (
