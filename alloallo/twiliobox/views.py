@@ -2,7 +2,6 @@
 import random
 
 from django.apps import apps
-from django.core.exceptions import ObjectDoesNotExist
 from django.views import generic
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse as dreverse
@@ -74,7 +73,7 @@ class MainMenu(ViewWithHandler):
     menu_options = [
         {
             'desc': 'Call a stranger',
-            # 'url': reverse('call_random_person'),
+            'url': 'call_random_person',
         },
         {
             'desc': 'Call a friend',
@@ -121,6 +120,8 @@ class MainMenu(ViewWithHandler):
         response.say(
             'You decided to {}'.format(selected['desc'])
         )
+        if selected.get('url'):
+            response.redirect(reverse(selected['url']))
         return HttpResponse(response)
 
 
@@ -186,8 +187,7 @@ class RandomCall(ViewWithHandler):
         response.say(
             'Now playing a new user profile. ' +
             'Press 1 at any time to start a conversation, ' +
-            'and 2 to skip to the ' +
-            'next profile',
+            'and # to skip to the next profile.',
             voice='woman')
 
         user_profile = self.get_random_profile(request)
@@ -223,7 +223,7 @@ class RandomCall(ViewWithHandler):
         dial = response.dial()
         # This will introduce caller to the called person
         introduction_url = reverse(
-            'twiliobox:introduce',
+            'introduce',
             kwargs={'user_pk': self.request.user.pk}
         )
         dial.number(call_to_profile.user.number, url=introduction_url)
