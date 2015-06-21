@@ -4,6 +4,7 @@ import random
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.views import generic
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse as dreverse
@@ -31,13 +32,17 @@ class IncomingCall(generic.View):
         response = twiml.Response()
 
         user = request.user
-        if user and user.first_name and user.last_name:
+        if isinstance(user, AnonymousUser) or not (
+            user and user.first_name and user.last_name
+        ):
+            response.say('Welcome to Allo, Allo!', voice='woman')
+        else:
             response.say(
-                'Aallo aallo {} {}! Welcome to Aallo Aallo!',
+                'Hello {} {}! Welcome to Allo, Allo!'.format(
+                    user.first_name, user.last_name
+                ),
                 voice='woman'
             )
-        else:
-            response.say('Welcome to Allo Allo!', voice='woman')
 
         if not user or not user.is_paid:
             if not user:
@@ -57,56 +62,26 @@ class IncomingCall(generic.View):
             response.say('We are happy to hear you.')
             response.redirect(reverse('main_menu'))
 
-        request.session['conversation_succeded'] = True
-
         return HttpResponse(response)
 
 
-class StatusCallback(generic.View):
-    def _do_return_call(self, number, other_number):
-        client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
-        call = client.calls.create(
-            url=self.request.build_absolute_uri(reverse('review_call')) + '?other_number=' + quote_plus(other_number),
-            to=number,
-            from_=settings.TWILIO_NUMBER
-        )
-        return call.sid
+# class StatusCallback(generic.View):
+#     def _do_return_call(self, number, other_number):
+#         client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
+#         call = client.calls.create(
+#             url=self.request.build_absolute_uri(reverse('review_call')) + '?other_number=' + quote_plus(other_number),
+#             to=number,
+#             from_=settings.TWILIO_NUMBER
+#         )
+#         return call.sid
 
-    def post(self, request):
-        data = request.POST
-        if request.session.get('conversation_succeded'):
-            return_call_id = self._do_return_call(data['From'], data['To'])
-            request.session['conversation_succeded'] = False
-            return HttpResponse(return_call_id)
-        return HttpResponse('')
-
-
-class ReviewIncomingCall(generic.View):
-    def post(self, request):
-        response = twiml.Response()
-        other_number = request.GET['other_number']
-        response.say('You just talked with users with number {}.'.format(other_number))
-
-        with response.gather(
-            numDigits=1,
-            action=reverse('add_friend_call') + '?other_number=' + quote_plus(other_number),
-            method='POST',
-            timeout=15,
-        ) as g:
-            g.say('Press 1 to add him as a friend.', loop=1)
-
-        return HttpResponse(response)
-
-
-class AddFriendCall(generic.View):
-    def post(self, request):
-        response = twiml.Response()
-        other_number = request.GET['other_number']
-        user1 = request.user
-        user2 = User.objects.get(number=other_number)
-        user1.friends.add(user2)
-        response.say('You add number {} as a friend.'.format(other_number))
-        return HttpResponse(response)
+#     def post(self, request):
+#         data = request.POST
+#         if request.session.get('conversation_succeded'):
+#             return_call_id = self._do_return_call(data['From'], data['To'])
+#             request.session['conversation_succeded'] = False
+#             return HttpResponse(return_call_id)
+#         return HttpResponse('')
 
 
 class ViewWithHandler(generic.View):
@@ -280,14 +255,116 @@ class RandomCall(ViewWithHandler):
     def setup_conversation(self, call_to_profile):
         response = twiml.Response()
         response.say("Connecting you to selected user.")
+        self.request.session['conversation_succeded'] = True
 
-        dial = response.dial()
+        dial = response.dial(
+            action=reverse('better_callback')
+        )
         # This will introduce caller to the called person
         introduction_url = reverse(
             'introduce',
             kwargs={'user_pk': self.request.user.pk}
         )
+
         dial.number(call_to_profile.user.number, url=introduction_url)
 
         response.say("The call failed or the user hung up.")
+        return HttpResponse(response)
+
+
+# class QuickTest(generic.View):
+#     def post(self, request):
+#         response = twiml.Response()
+#         response.say("Connecting you to random user.")
+#         self.request.session['conversation_succeded'] = True
+
+#         dial = response.dial(
+#             action=reverse('better_callback')
+#         )
+#         # This will introduce caller to the called person
+#         introduction_url = reverse(
+#             'introduce',
+#             kwargs={'user_pk': self.request.user.pk}
+#         )
+
+#         random_guy = User.objects.get(pk=22)
+
+#         to_review = self.request.session.get('calls_to_review', [])
+#         to_review.insert(0, random_guy.pk)
+#         self.request.session['calls_to_review'] = to_review
+
+#         dial.number(random_guy.number, url=introduction_url)
+
+#         response.say("The call failed or the user hung up.")
+#         return HttpResponse(response)
+
+
+class BetterCallback(generic.View):
+    def post(self, request):
+        client = TwilioRestClient(
+            settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
+        sid = request.POST.get('DialCallSid')
+        call = client.calls.get(sid)
+
+        # Having call.to and call.from_ here
+        # just an extra check
+        assert request.user == User.objects.get(number=call.from_)
+
+        user1 = User.objects.get(number=call.from_)
+        user2 = User.objects.get(number=call.to)
+
+        client = TwilioRestClient(settings.TWILIO_LIVE_SID, settings.TWILIO_LIVE_TOKEN)
+        client.calls.create(
+            url=''.join([
+                self.request.build_absolute_uri(reverse('review_call')),
+                '?pk_from={}&pk_to={}'.format(user1.pk, user2.pk)
+            ]),
+            to=request.user.number,
+            from_=settings.TWILIO_NUMBER
+        )
+        return HttpResponse('ok')
+
+
+class ReviewIncomingCall(generic.View):
+    def post(self, request):
+        # Get the sid of call that has just been made
+        pk_from = request.GET.get('pk_from')
+        pk_to = request.GET.get('pk_to')
+
+        other_user = User.objects.get(pk=pk_to)
+
+        response = twiml.Response()
+        response.say(
+            'You have been talking with {} {}.'.format(
+                other_user.first_name, other_user.last_name
+            )
+        )
+        with response.gather(
+            numDigits=1,
+            action=''.join([
+                reverse('add_friend_call'),
+                '?pk_from={}&pk_to={}'.format(pk_from, pk_to)
+            ]),
+            method='POST',
+            timeout=15,
+        ) as g:
+            g.say('Press 1 to add him as a friend or just hang up.')
+
+        return HttpResponse(response)
+
+
+class AddFriendCall(generic.View):
+    def post(self, request):
+        pk_from = request.GET.get('pk_from')
+        pk_to = request.GET.get('pk_to')
+        user1 = User.objects.get(pk=pk_from)
+        user2 = User.objects.get(pk=pk_to)
+        user1.friends.add(user2)
+
+        response = twiml.Response()
+        response.say(
+            'You have added {} {} as a friend.'.format(
+                user2.first_name, user2.last_name
+            )
+        )
         return HttpResponse(response)
