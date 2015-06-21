@@ -216,16 +216,22 @@ class DescriptionEdit(generic.View):
 class RandomCall(ViewWithHandler):
 
     def get_random_profile(self, request):
-        profiles = [p for p in Profile.objects.filter(is_available_for_random=True)]
-        random.shuffle(profiles)
-        for profile in profiles:
-            try:
-                if request.user and request.user.id == profile.user.id:
-                    continue
-            except:
-                pass
-            if profile.audio_description:
-                return profile
+        if 'random_order' in request.session:
+            users = request.session['random_order']
+        else:
+            users = list(
+                Profile.objects.exclude(user_id=request.user.id).filter(audio_description__isnull=False, is_available_for_random=True).values_list('user_id', flat=True)
+            )
+            random.shuffle(users)
+
+        try:
+            user_id = users.pop()
+            users.insert(0, user_id)
+        except IndexError:
+            pass
+        else:
+            request.session['random_order'] = users
+            return Profile.objects.get(user_id=user_id)
 
     def get_last_profile(self, request):
         user_id = request.session.get("last_played_profile")
@@ -234,11 +240,12 @@ class RandomCall(ViewWithHandler):
 
     def post(self, request):
         response = twiml.Response()
-        response.say(
-            'Playing a random user profile. ' +
-            'Press 1 at any time to start a conversation. ' +
-            'Press 2 to skip to the next profile.',
-            voice='woman')
+        if 'random_order' not in request.session:
+            response.say(
+                'Playing a random user profile. ' +
+                'Press 1 at any time to start a conversation. ' +
+                'Press 2 to skip to the next profile.',
+                voice='woman')
 
         user_profile = self.get_random_profile(request)
         if not user_profile:
