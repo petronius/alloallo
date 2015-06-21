@@ -203,8 +203,8 @@ LOGIN_URL = reverse_lazy("accounts:login")
 
 INCOMING_NUMBERS = [
     ('de', '+49 89 120 898 177'),
-    ('pl', '+48 12 881 17 94'),
-    ('gb', '+44 115 824 2683'),
+    ('pl', '+48 428 810 176'),
+    ('gb', '+44 115 824 28 13'),
     ('us', '+1 928 597 3291'),
 ]
 MAIN_INCOMING_NUMBER = dict(INCOMING_NUMBERS)['de']
